@@ -1,7 +1,7 @@
 # Titular del Proyecto
 
-_Carlos José Gálvez Payares_
-_Alias: Charlowit_
+Carlos José Gálvez Payares
+Alias: Charlowit
 
 # Título del Proyecto
 
