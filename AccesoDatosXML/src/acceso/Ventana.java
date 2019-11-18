@@ -174,8 +174,6 @@ public class Ventana extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        jTextField17 = new javax.swing.JTextField();
-        jLabel20 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -811,7 +809,7 @@ public class Ventana extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id_Paquete", "Peso", "Destino"
+                "Id_Paquete", "Peso", "Origen"
             }
         ) {
             Class[] types = new Class [] {
@@ -915,10 +913,6 @@ public class Ventana extends javax.swing.JFrame {
 
         jLabel19.setText("Profundidad");
 
-        jTextField17.setEditable(false);
-
-        jLabel20.setText("Destino");
-
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -949,12 +943,8 @@ public class Ventana extends javax.swing.JFrame {
                                     .addGroup(jPanel4Layout.createSequentialGroup()
                                         .addComponent(jLabel10)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel20)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 231, Short.MAX_VALUE))))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
@@ -1014,13 +1004,11 @@ public class Ventana extends javax.swing.JFrame {
                     .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton20)
                     .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                .addGap(28, 28, 28)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel20))
-                .addContainerGap(31, Short.MAX_VALUE))
+                    .addComponent(jLabel10))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jTextField14, jTextField16});
@@ -1233,13 +1221,14 @@ public class Ventana extends javax.swing.JFrame {
         boolean check = false;
         int row;
         row=jTable2.getSelectedRow();
+        int id_camionero = camioneros.get(row).getId_camionero();
         for(Ruta ruta : rutas){
-            if(rutas.get(row).getId_camionero() == ruta.getId_ruta()){
+            if(id_camionero == ruta.getId_camionero()){
                 check = true;
             }
         }
-        if(!check){
-            camioneros.remove(camioneros.get(row));
+        if(check == false){
+            camioneros.remove(row);
             listModel2.removeRow(row);                
             this.model2 = new DefaultComboBoxModel();
             for(Camionero camionero : camioneros){
@@ -1289,7 +1278,7 @@ public class Ventana extends javax.swing.JFrame {
         jTextField12.setText(rutas.get(row).getFecha());
         for(Camionero camionero : camioneros){
             if(rutas.get(row).getId_camionero()== camionero.getId_camionero()){
-                jComboBox1.setSelectedItem(camionero.getNombre());
+                jComboBox2.setSelectedItem(camionero.getNombre());
             }
         }
     }//GEN-LAST:event_jTable3MouseClicked
@@ -1325,8 +1314,9 @@ public class Ventana extends javax.swing.JFrame {
         boolean check = false;
         int row;
         row=jTable3.getSelectedRow();
+        int id_ruta = rutas.get(row).getId_ruta();
         for(Paquete paquete : paquetes){
-            if(paquetes.get(row).getId_ruta() == paquete.getId_ruta()){
+            if(id_ruta == paquete.getId_ruta()){
                 check = true;
             }
         }
@@ -1354,7 +1344,7 @@ public class Ventana extends javax.swing.JFrame {
 
     private void jButton14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton14MouseClicked
         // BOTON GUARDAR RUTAS EN ARRAY Y JTABLE3
-        if(this.count == 0){
+if(this.count == 0){
             int row = 0;
             String nombre_camionero = jComboBox2.getSelectedItem().toString();
             int id_camionero = 0;
@@ -1363,11 +1353,8 @@ public class Ventana extends javax.swing.JFrame {
                     id_camionero = camionero.getId_camionero();
                 }
             }
-            if(rutas.size() > 0){
+            if(rutas.size() >= 1){
                 row = rutas.get(rutas.size()-1).getId_ruta()+1;
-            }
-            else if(rutas.size() == 1){
-                row = rutas.get(rutas.size()).getId_ruta()+1;
             }
             else{
                 row = rutas.size();
@@ -1379,8 +1366,9 @@ public class Ventana extends javax.swing.JFrame {
             
             Ruta aux = new Ruta(row,origen_ruta,destino_ruta,hora,fecha,id_camionero);
             insertarRuta(aux);
+            int posicion= jTable3.getRowCount();
             this.listModel3 = (DefaultTableModel) jTable3.getModel();
-            listModel3.insertRow(row, new Object[]{aux.getId_ruta(),aux.getOrigen(),aux.getDestino(),nombre_camionero});
+            listModel3.insertRow(posicion, new Object[]{aux.getId_ruta(),aux.getOrigen(),aux.getDestino(),nombre_camionero});
             this.model3 = new DefaultComboBoxModel();
             for(Ruta ruta : rutas){
                 model3.addElement(ruta.getOrigen());
@@ -1449,7 +1437,6 @@ public class Ventana extends javax.swing.JFrame {
         jTextField14.setText("");
         jTextField15.setText("");
         jTextField16.setText("");
-        jTextField17.setText("");
         jButton16.setEnabled(true);
         jButton17.setEnabled(true);
         jButton18.setEnabled(true);
@@ -1462,23 +1449,14 @@ public class Ventana extends javax.swing.JFrame {
         if(this.count == 0){
             int row = 0;
             String nombre_ruta = jComboBox3.getSelectedItem().toString();
-            String destino = "";
             int id_ruta = 0;
             for(Ruta ruta : rutas){
                 if(ruta.getOrigen()== nombre_ruta){
                     id_ruta = ruta.getId_ruta();
                 }
             }
-            for(Ruta ruta : rutas){
-                if(ruta.getId_ruta() == id_ruta){
-                    destino = ruta.getDestino();
-                }
-            }
-            if(paquetes.size() > 0){
+            if(paquetes.size() >= 1){
                 row = paquetes.get(paquetes.size()-1).getId_paquete()+1;
-            }
-            else if (paquetes.size() == 1 ){
-                row = paquetes.get(paquetes.size()).getId_paquete()+1;
             }
             else{
                 row = paquetes.size();
@@ -1490,8 +1468,9 @@ public class Ventana extends javax.swing.JFrame {
             
             Paquete aux = new Paquete(row,peso_paquete,altura_paquete,ancho_paquete,profundidad_paquete,id_ruta);
             insertarPaquete(aux);
+            int posicion= jTable4.getRowCount();
             this.listModel4 = (DefaultTableModel) jTable4.getModel();
-            listModel4.insertRow(row, new Object[]{aux.getId_paquete(),aux.getPeso(),destino});
+            listModel4.insertRow(posicion, new Object[]{aux.getId_paquete(),aux.getPeso(),nombre_ruta});
 
         }
         else if(this.count == 1){
@@ -1502,7 +1481,6 @@ public class Ventana extends javax.swing.JFrame {
                     id_ruta = ruta.getId_ruta();
                 }
             }
-            
             int row = jTable4.getSelectedRow();
             double peso_paquete = Double.parseDouble(jTextField13.getText());
             double altura_paquete = Double.parseDouble(jTextField14.getText());
@@ -1518,18 +1496,17 @@ public class Ventana extends javax.swing.JFrame {
             aux.setProfundidad(profundidad_paquete);
             aux.setId_ruta(id_ruta);
             paquetes.add(row, aux);
-            this.listModel4 = (DefaultTableModel) jTable3.getModel();
-            listModel4.insertRow(row, new Object[]{aux.getId_ruta(),aux.getId_paquete(),aux.getPeso(),nombre_ruta});
+            this.listModel4 = (DefaultTableModel) jTable4.getModel();
+            listModel4.insertRow(row, new Object[]{aux.getId_paquete(),aux.getPeso(),nombre_ruta});
             paquetes.remove(rutas.get(row+1));
-            listModel4.removeRow(row+1);
-            this.model3 = new DefaultComboBoxModel();            
+            listModel4.removeRow(row+1);            
         }
         setEditableFalse4(); 
         jButton16.setEnabled(true);
         jButton17.setEnabled(true);
         jButton18.setEnabled(true);
         jButton19.setEnabled(false);
-        jButton20.setEnabled(false);
+        jButton20.setEnabled(false);                           
     }//GEN-LAST:event_jButton19MouseClicked
 
     private void jTextField16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField16ActionPerformed
@@ -1543,9 +1520,9 @@ public class Ventana extends javax.swing.JFrame {
     private void jButton18MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton18MouseClicked
         setEditableFalse2();
         int row;
-        row=jTable3.getSelectedRow();
-        rutas.remove(rutas.get(row));
-        listModel3.removeRow(row); 
+        row=jTable4.getSelectedRow();
+        paquetes.remove(paquetes.get(row));
+        listModel4.removeRow(row); 
     }//GEN-LAST:event_jButton18MouseClicked
 
     private void jButton17MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton17MouseClicked
@@ -1566,7 +1543,6 @@ public class Ventana extends javax.swing.JFrame {
         jTextField14.setText("");
         jTextField15.setText("");
         jTextField16.setText("");
-        jTextField17.setText("");
         jButton16.setEnabled(false);
         jButton17.setEnabled(false);
         jButton18.setEnabled(false);
@@ -1585,8 +1561,8 @@ public class Ventana extends javax.swing.JFrame {
         jTextField15.setText(String.valueOf(paquetes.get(row).getAncho()));
         jTextField16.setText(String.valueOf(paquetes.get(row).getProfundidad()));
         for(Ruta ruta : rutas){
-            if(rutas.get(row).getId_ruta()== ruta.getId_ruta()){
-                jComboBox1.setSelectedItem(ruta.getOrigen());
+            if(paquetes.get(row).getId_ruta()== ruta.getId_ruta()){
+                jComboBox3.setSelectedItem(ruta.getOrigen());
             }
         }
     }//GEN-LAST:event_jTable4MouseClicked
@@ -1628,7 +1604,7 @@ public class Ventana extends javax.swing.JFrame {
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         //GUARDAR CAMIONERO EN ARRAY Y JTABLE2
-           if(this.count == 0){
+if(this.count == 0){
             int row = 0;
             String nombre_camion = jComboBox1.getSelectedItem().toString();
             int id_camion = 0;
@@ -1637,11 +1613,11 @@ public class Ventana extends javax.swing.JFrame {
                     id_camion = camion.getId_camion();
                 }
             }
-            if(camioneros.size() > 0){
+            if(camioneros.size() == 1){
                 row = camioneros.get(camioneros.size()-1).getId_camionero()+1;
             }
-            else if(camioneros.size() == 1){
-                row = camioneros.get(camioneros.size()).getId_camionero()+1;
+            else if(camioneros.size() > 1){
+                row = camioneros.get(camioneros.size()-1).getId_camionero()+1;
             }
             else{
                 row = camioneros.size();
@@ -1650,11 +1626,11 @@ public class Ventana extends javax.swing.JFrame {
             String apellido_camionero = jTextField6.getText();
             int edad = Integer.parseInt(jTextField7.getText());
             double salario = Double.parseDouble(jTextField8.getText());
-            
+            int posicion= jTable2.getRowCount();
             Camionero aux = new Camionero(row,nombre_camionero,apellido_camionero,edad,salario,id_camion);
             insertarCamionero(aux);
             this.listModel2 = (DefaultTableModel) jTable2.getModel();
-            listModel2.insertRow(row, new Object[]{aux.getId_camionero(),aux.getNombre(),nombre_camion});
+            listModel2.insertRow(posicion, new Object[]{aux.getId_camionero(),aux.getNombre(),nombre_camion});
             this.model2 = new DefaultComboBoxModel();
             for(Camionero camionero : camioneros){
                 model2.addElement(camionero.getNombre());
@@ -1708,14 +1684,6 @@ public class Ventana extends javax.swing.JFrame {
 
     private void jComboBox3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComboBox3MouseClicked
         //CLICK ON JCOMBOBOX3
-        String origen = jComboBox3.getSelectedItem().toString();
-        int id_ruta = 0;
-        for (Ruta ruta : rutas){
-            if(ruta.getOrigen() == origen){
-                jTextField17.setText(ruta.getDestino());
-            }
-                
-        }
     }//GEN-LAST:event_jComboBox3MouseClicked
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -1780,7 +1748,7 @@ public class Ventana extends javax.swing.JFrame {
         this.listModel3 = (DefaultTableModel) jTable3.getModel();
         this.model3 = new DefaultComboBoxModel();
         for(Ruta ruta : rutas){
-            model2.addElement(ruta.getOrigen());
+            model3.addElement(ruta.getOrigen());
             String nombre_camionero = "";
             for(Camionero camionero : camioneros){
                 if(ruta.getId_camionero() == camionero.getId_camionero()){
@@ -1803,7 +1771,7 @@ public class Ventana extends javax.swing.JFrame {
             String nombre_ruta = "";
             for(Ruta ruta : rutas){
                 if(paquete.getId_ruta() == ruta.getId_ruta()){
-                    nombre_ruta = ruta.getDestino();
+                    nombre_ruta = ruta.getOrigen();
                 }
             }
             listModel4.addRow(new Object[]{paquete.getId_paquete(),paquete.getPeso(),nombre_ruta});
@@ -1984,7 +1952,6 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -2013,7 +1980,6 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField14;
     private javax.swing.JTextField jTextField15;
     private javax.swing.JTextField jTextField16;
-    private javax.swing.JTextField jTextField17;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
