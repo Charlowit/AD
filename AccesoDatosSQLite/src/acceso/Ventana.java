@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,8 +53,9 @@ public class Ventana extends javax.swing.JFrame {
     private Camionero camionero_aux;
     private Ruta ruta_aux;
     private int count;
+    public Connection conn;
 
-    public Ventana() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException {
+    public Ventana() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException, SQLException {
         initComponents();
         setEditableFalse1();
         setEditableFalse2();
@@ -89,6 +93,8 @@ public class Ventana extends javax.swing.JFrame {
         this.camioneros = new ArrayList();
         this.rutas = new ArrayList();
         this.paquetes = new ArrayList();
+        
+        
         leerCamiones();
         leerCamioneros();
         leerRutas();
@@ -1052,21 +1058,18 @@ public class Ventana extends javax.swing.JFrame {
         //BOTON GUARDAR CAMIONES
         if(this.count == 0){
             int row = 0;
-            if(camiones.size() > 0){
-                row = camiones.get(camiones.size()-1).getId_camion()+1;
-            }
-            else if(camiones.size() == 1){
-                row = camiones.get(camiones.size()).getId_camion()+1;
-            }
-            else{
-                row = camiones.size();
-            }
             String nombre_camion = jTextField1.getText();
             int velocidad_maxima = Integer.parseInt(jTextField2.getText());
             int mma = Integer.parseInt(jTextField3.getText());
             double litros_tanque = Double.parseDouble(jTextField4.getText());
        
-            Camion aux = new Camion(row,nombre_camion,velocidad_maxima,mma,litros_tanque);
+            Camion aux = new Camion(nombre_camion,velocidad_maxima,mma,litros_tanque);
+            try {
+                row  = Sqlite.insertarCamion(aux);
+                aux.setId_camion(row);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             insertarCamion(aux);
             this.model1 = new DefaultComboBoxModel();
             for(Camion camion : camiones){
@@ -1088,6 +1091,11 @@ public class Ventana extends javax.swing.JFrame {
             aux.setMma(mma);
             aux.setVelocidad_maxima(velocidad_maxima);
             aux.setLitros_tanque(litros_tanque);
+            try {
+                Sqlite.modificarCamion(aux);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             camiones.add(row, aux);
             listModel1.insertRow(row, new Object[]{aux.getId_camion(),aux.getNombre_camion(),aux.getMma()});
             camiones.remove(camiones.get(row+1));
@@ -1126,7 +1134,11 @@ public class Ventana extends javax.swing.JFrame {
             }
         }
         if(!check){
-            BorrarCamion(row);                
+            try {                
+                BorrarCamion(row);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             this.model1 = new DefaultComboBoxModel();
             for(Camion camion : camiones){
                 model1.addElement(camion.getNombre_camion());
@@ -1228,6 +1240,11 @@ public class Ventana extends javax.swing.JFrame {
             }
         }
         if(check == false){
+            try {
+                Sqlite.borrarCamionero(camioneros.get(row));
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             camioneros.remove(row);
             listModel2.removeRow(row);                
             this.model2 = new DefaultComboBoxModel();
@@ -1321,6 +1338,11 @@ public class Ventana extends javax.swing.JFrame {
             }
         }
         if(!check){
+            try {
+                Sqlite.borrarRuta(rutas.get(row));
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             rutas.remove(rutas.get(row));
             listModel3.removeRow(row);                
             this.model3 = new DefaultComboBoxModel();
@@ -1353,18 +1375,18 @@ if(this.count == 0){
                     id_camionero = camionero.getId_camionero();
                 }
             }
-            if(rutas.size() >= 1){
-                row = rutas.get(rutas.size()-1).getId_ruta()+1;
-            }
-            else{
-                row = rutas.size();
-            }
             String origen_ruta = jTextField9.getText();
             String destino_ruta = jTextField10.getText();
             String hora = jTextField11.getText();
             String fecha = jTextField12.getText();
             
-            Ruta aux = new Ruta(row,origen_ruta,destino_ruta,hora,fecha,id_camionero);
+            Ruta aux = new Ruta(origen_ruta,destino_ruta,hora,fecha,id_camionero);
+            try {
+                row = Sqlite.insertarRuta(aux);
+                aux.setId_ruta(row);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             insertarRuta(aux);
             int posicion= jTable3.getRowCount();
             this.listModel3 = (DefaultTableModel) jTable3.getModel();
@@ -1395,7 +1417,12 @@ if(this.count == 0){
             aux.setDestino(destino_ruta);
             aux.setHora(hora);
             aux.setFecha(fecha);
-            aux.setId_camionero(id_camionero);
+            aux.setId_camionero(id_camionero);    
+    try {
+        Sqlite.modificarRuta(aux);
+    } catch (SQLException ex) {
+        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+    }
             rutas.add(row, aux);
             this.listModel3 = (DefaultTableModel) jTable3.getModel();
             listModel3.insertRow(row, new Object[]{aux.getId_ruta(),aux.getOrigen(),aux.getDestino(),nombre_camionero});
@@ -1455,18 +1482,18 @@ if(this.count == 0){
                     id_ruta = ruta.getId_ruta();
                 }
             }
-            if(paquetes.size() >= 1){
-                row = paquetes.get(paquetes.size()-1).getId_paquete()+1;
-            }
-            else{
-                row = paquetes.size();
-            }
             double peso_paquete = Double.parseDouble(jTextField13.getText());
             double altura_paquete = Double.parseDouble(jTextField14.getText());
             double ancho_paquete = Double.parseDouble(jTextField15.getText());
             double profundidad_paquete = Double.parseDouble(jTextField16.getText());
             
-            Paquete aux = new Paquete(row,peso_paquete,altura_paquete,ancho_paquete,profundidad_paquete,id_ruta);
+            Paquete aux = new Paquete(peso_paquete,altura_paquete,ancho_paquete,profundidad_paquete,id_ruta);
+            try {
+                row = Sqlite.insertarPaquete(aux);
+                aux.setId_paquete(row);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             insertarPaquete(aux);
             int posicion= jTable4.getRowCount();
             this.listModel4 = (DefaultTableModel) jTable4.getModel();
@@ -1495,11 +1522,16 @@ if(this.count == 0){
             aux.setAncho(ancho_paquete);
             aux.setProfundidad(profundidad_paquete);
             aux.setId_ruta(id_ruta);
+            try {
+                Sqlite.modificarPaquete(aux);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             paquetes.add(row, aux);
             this.listModel4 = (DefaultTableModel) jTable4.getModel();
             listModel4.insertRow(row, new Object[]{aux.getId_paquete(),aux.getPeso(),nombre_ruta});
             paquetes.remove(paquetes.get(row+1));
-            listModel4.removeRow(row+1);            
+            listModel4.removeRow(row+1);
         }
         setEditableFalse4(); 
         jButton16.setEnabled(true);
@@ -1521,6 +1553,11 @@ if(this.count == 0){
         setEditableFalse2();
         int row;
         row=jTable4.getSelectedRow();
+        try {
+            Sqlite.borrarPaquete(paquetes.get(row));
+        } catch (SQLException ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+        }
         paquetes.remove(paquetes.get(row));
         listModel4.removeRow(row); 
     }//GEN-LAST:event_jButton18MouseClicked
@@ -1604,7 +1641,7 @@ if(this.count == 0){
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         //GUARDAR CAMIONERO EN ARRAY Y JTABLE2
-if(this.count == 0){
+        if(this.count == 0){
             int row = 0;
             String nombre_camion = jComboBox1.getSelectedItem().toString();
             int id_camion = 0;
@@ -1613,21 +1650,21 @@ if(this.count == 0){
                     id_camion = camion.getId_camion();
                 }
             }
-            if(camioneros.size() == 1){
-                row = camioneros.get(camioneros.size()-1).getId_camionero()+1;
-            }
-            else if(camioneros.size() > 1){
-                row = camioneros.get(camioneros.size()-1).getId_camionero()+1;
-            }
-            else{
-                row = camioneros.size();
-            }
+
             String nombre_camionero = jTextField5.getText();
             String apellido_camionero = jTextField6.getText();
             int edad = Integer.parseInt(jTextField7.getText());
             double salario = Double.parseDouble(jTextField8.getText());
+            
             int posicion= jTable2.getRowCount();
-            Camionero aux = new Camionero(row,nombre_camionero,apellido_camionero,edad,salario,id_camion);
+            Camionero aux = new Camionero(nombre_camionero,apellido_camionero,edad,salario,id_camion);
+            try {
+                row = Sqlite.insertarCamionero(aux);
+                aux.setId_camionero(row);
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             insertarCamionero(aux);
             this.listModel2 = (DefaultTableModel) jTable2.getModel();
             listModel2.insertRow(posicion, new Object[]{aux.getId_camionero(),aux.getNombre(),nombre_camion});
@@ -1658,6 +1695,11 @@ if(this.count == 0){
             aux.setEdad(edad);
             aux.setSalario(salario);
             aux.setId_camion(id_camion);
+            try {
+                Sqlite.modificarCamionero(aux);
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
             camioneros.add(row, aux);
             this.listModel2 = (DefaultTableModel) jTable2.getModel();
             listModel2.insertRow(row, new Object[]{aux.getId_camionero(),aux.getNombre(),nombre_camion});
@@ -1700,11 +1742,9 @@ if(this.count == 0){
         }     
         dataOS.close();  //cerrar stream de salida
     }
-    private void leerCamiones() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException{
+    private void leerCamiones() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException, SQLException{
             
-            LeerXML.LeerCamion();
-            
-            camiones = LeerXML.getCamiones();
+            Sqlite.leerCamion(camiones);
 
             this.listModel1 = (DefaultTableModel) jTable1.getModel();
             this.model1 = new DefaultComboBoxModel();
@@ -1716,16 +1756,12 @@ if(this.count == 0){
  
         
     }
-    private void leerCamioneros() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException{
+    private void leerCamioneros() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException, SQLException{
         
-        LeerXML.LeerCamionero();
         
-        camioneros = LeerXML.getCamioneros();
-        
+        Sqlite.leerCamionero(camioneros);
         this.listModel2 = (DefaultTableModel) jTable2.getModel();
         this.model2 = new DefaultComboBoxModel();
-        
-        
 
         for(Camionero camionero : camioneros){
             model2.addElement(camionero.getNombre());
@@ -1739,11 +1775,9 @@ if(this.count == 0){
         }
         jComboBox2.setModel(model2);
     }
-    private void leerRutas() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException{
+    private void leerRutas() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException, SQLException{
 
-        LeerXML.LeerRuta();
-        
-        rutas = LeerXML.getRutas();
+        Sqlite.leerRuta(rutas);
         
         this.listModel3 = (DefaultTableModel) jTable3.getModel();
         this.model3 = new DefaultComboBoxModel();
@@ -1760,11 +1794,11 @@ if(this.count == 0){
         jComboBox3.setModel(model3);
     }
 
-    private void leerPaquetes() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException{
+    private void leerPaquetes() throws FileNotFoundException, IOException, ClassNotFoundException, SAXException, SQLException{
        
-        LeerXML.LeerPaquete();
         
-        paquetes = LeerXML.getPaquetes();
+        
+        Sqlite.leerPaquete(paquetes);
         
         this.listModel4 = (DefaultTableModel) jTable4.getModel();
         for(Paquete paquete : paquetes){
@@ -1788,10 +1822,10 @@ if(this.count == 0){
             //guardarRutas();
             //guardarCamioneros();
             //guardarCamiones();
-            EscribirXML.Escribir_Paquetes(paquetes);
-            EscribirXML.Escribir_Rutas(rutas);
-            EscribirXML.Escribir_Camioneros(camioneros);
-            EscribirXML.Escribir_Camion(camiones);
+            //EscribirXML.Escribir_Paquetes(paquetes);
+            //EscribirXML.Escribir_Rutas(rutas);
+            //EscribirXML.Escribir_Camioneros(camioneros);
+            //EscribirXML.Escribir_Camion(camiones);
             
     }//GEN-LAST:event_formWindowClosing
     public void setEditableTrue1(){
@@ -1867,7 +1901,8 @@ if(this.count == 0){
     public void insertarPaquete(Paquete aux){
             paquetes.add(aux);
     }
-    public void BorrarCamion(int row){
+    public void BorrarCamion(int row) throws SQLException{
+        Sqlite.borrarCamion(camiones.get(row));
         camiones.remove(camiones.get(row));
         listModel1.removeRow(row);
     }
@@ -1910,6 +1945,8 @@ if(this.count == 0){
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (SAXException ex) {
+                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
                     Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
