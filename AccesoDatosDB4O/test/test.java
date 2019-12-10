@@ -8,9 +8,14 @@ import acceso.Camion;
 import acceso.Ventana;
 import acceso.Ruta;
 import acceso.Camionero;
+import acceso.Db4o;
 import acceso.Paquete;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.query.Query;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -26,6 +31,8 @@ import org.xml.sax.SAXException;
  * @author Charlowit
  */
 public class test {
+    public ArrayList<Camion> arraycamion = new ArrayList();
+    public ArrayList<Camionero> arraycamionero = new ArrayList();
     
     public test() {
     }
@@ -51,44 +58,89 @@ public class test {
     //
     // @Test
     // public void hello() {}
-    @Test
-    public void insertar_camion_en_array() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
-        Camion aux = new Camion(1,"trucki",123,23423,234234);
-        Ventana ventana = new Ventana();       
-        int tamanio = ventana.camiones.size();
-        ventana.insertarCamion(aux);
+    
+    //@Test
+    public void leer_camiones_meter_array() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
+
         
-        Assert.assertEquals(tamanio+1,ventana.camiones.size());
+        ObjectContainer db = com.db4o.Db4o.openFile("Envios.db");
+        Query q = db.query();
+        q.constrain(Camion.class);
+        ObjectSet result = q.execute();
+        
+        System.out.println(result.size());
+        
+        while(result.hasNext()){
+            
+            Camion a = new Camion();
+            a = (Camion) result.next();
+            arraycamion.add(a);
+        }
+        db.close();
     }
-    @Test
-    public void insertar_camionero_en_array() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
-        Camionero aux = new Camionero(1,"Pepe","Antonio",23423,234234,1);
-        Ventana ventana = new Ventana();
-        int tamanio = ventana.camioneros.size();
-        ventana.insertarCamionero(aux);
-        Assert.assertEquals(tamanio+1,ventana.camioneros.size());
+    //@Test
+    public void insertar_camion_db() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
+        int tamanio = arraycamion.size();
+        Camion aux = new Camion(50,"trololo",123,23423,234234);
+        
+        ObjectContainer db  = com.db4o.Db4o.openFile("Envios.db");
+        db.store(aux);
+
+          
+       Query q = db.query();
+       q.constrain(Camion.class);
+       q.descend("id_camion").constrain(new Integer(aux.getId_camion())).equal();
+       ObjectSet result = q.execute();
+       
+
+       Camion modificar = (Camion) result.next();
+       
+       arraycamion.add(modificar);
+       
+        
+        Assert.assertEquals(tamanio+1,arraycamion.size());
+        db.close();
     }
-    @Test
-    public void insertar_ruta_en_array() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
-        Ruta aux = new Ruta(1,"Malaga1","Granada1","23.30","12/12/12",1);
-        Ventana ventana = new Ventana();
-        int tamanio = ventana.rutas.size();
-        ventana.insertarRuta(aux); 
-        Assert.assertEquals(tamanio+1,ventana.rutas.size());
+    
+    //@Test
+    public void borrar_camion_db() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
+ 
+       
+       Camion aux = new Camion(50,"trololo",123,23423,234234);
+       Db4o.borrarCamion(aux);
+       
     }
-    @Test
-    public void insertar_paquete_en_array() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
-        Paquete aux = new Paquete(1,20,20,20,20,1);
-        Ventana ventana = new Ventana();
-        int tamanio = ventana.paquetes.size();
-        ventana.insertarPaquete(aux);   
-        Assert.assertEquals(tamanio+1,ventana.paquetes.size());
+    //@Test
+    public void insertar_camionero_db() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
+        int tamanio = arraycamionero.size();
+        Camionero aux = new Camionero(50,"trololo","lalala",23423,234234,1);
+        
+        ObjectContainer db  = com.db4o.Db4o.openFile("Envios.db");
+        db.store(aux);
+          
+       Query q = db.query();
+       q.constrain(Camionero.class);
+       q.descend("id_camionero").constrain(new Integer(aux.getId_camionero())).equal();
+       ObjectSet result = q.execute();
+       
+
+       Camionero modificar = (Camionero) result.next();
+       
+       arraycamionero.add(modificar);
+       
+        
+        Assert.assertEquals(tamanio+1,arraycamionero.size());
+        db.close();
     }
-    @Test
-    public void borrar_camion_de_array() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
-        Ventana ventana = new Ventana();
-        int tamanio = ventana.camiones.size();
-        ventana.BorrarCamion(1);
-        Assert.assertEquals(tamanio-1,ventana.paquetes.size());
+    
+    //@Test
+    public void borrar_camionero_db() throws IOException, FileNotFoundException, ClassNotFoundException, SAXException{
+ 
+       
+       Camionero aux = new Camionero(50,"trololo","lalala",23423,234234,1);
+       Db4o.borrarCamionero(aux);
+       
     }
+   
+    
 }
