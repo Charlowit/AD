@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17-ene-2020 21:44:16 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="acceso.Ruta" table="ruta" catalog="paqueteria" optimistic-lock="version">
+        <id name="idRuta" type="java.lang.Integer">
+            <column name="id_ruta" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="camionero" class="acceso.Camionero" fetch="select">
+            <column name="id_camionero" />
+        </many-to-one>
+        <property name="origen" type="string">
+            <column name="origen" length="45" />
+        </property>
+        <property name="destino" type="string">
+            <column name="destino" length="45" />
+        </property>
+        <property name="hora" type="string">
+            <column name="hora" length="45" />
+        </property>
+        <property name="fecha" type="string">
+            <column name="fecha" length="45" />
+        </property>
+        <set name="paquetes" table="paquete" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_ruta" />
+            </key>
+            <one-to-many class="acceso.Paquete" />
+        </set>
+    </class>
+</hibernate-mapping>

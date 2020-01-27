@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17-ene-2020 21:44:16 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="acceso.Paquete" table="paquete" catalog="paqueteria" optimistic-lock="version">
+        <id name="idPaquete" type="java.lang.Integer">
+            <column name="id_paquete" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="ruta" class="acceso.Ruta" fetch="select">
+            <column name="id_ruta" />
+        </many-to-one>
+        <property name="peso" type="java.lang.Double">
+            <column name="peso" precision="22" scale="0" />
+        </property>
+        <property name="altura" type="java.lang.Double">
+            <column name="altura" precision="22" scale="0" />
+        </property>
+        <property name="ancho" type="java.lang.Double">
+            <column name="ancho" precision="22" scale="0" />
+        </property>
+        <property name="profundidad" type="java.lang.Double">
+            <column name="profundidad" precision="22" scale="0" />
+        </property>
+    </class>
+</hibernate-mapping>
