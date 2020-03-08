@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 06-mar-2020 22:38:51 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="ORM.Camion" table="camion" catalog="paqueteria" optimistic-lock="version">
+        <id name="idCamion" type="java.lang.Integer">
+            <column name="id_camion" />
+            <generator class="identity" />
+        </id>
+        <property name="nombreCamion" type="string">
+            <column name="nombre_camion" length="45" />
+        </property>
+        <property name="velocidadMaxima" type="java.lang.Integer">
+            <column name="velocidad_maxima" />
+        </property>
+        <property name="mma" type="java.lang.Integer">
+            <column name="mma" />
+        </property>
+        <property name="litrosTanque" type="java.lang.Double">
+            <column name="litros_tanque" precision="22" scale="0" />
+        </property>
+    </class>
+</hibernate-mapping>
