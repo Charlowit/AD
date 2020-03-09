@@ -27,7 +27,7 @@ ERROR: no se especific&oacute; sede a mostrar.
     <body>
         <form name="camion" method="post" action="controlador">
         <input type="hidden" name="idCamion" value="<%=camionBean.getIdCamion()%>">
-            <table border="1"><tr><td colspan="2" align="center">Carrera</td></tr>
+            <table border="1"><tr><td colspan="2" align="center">Camion</td></tr>
                 <tr><td>Nombre: </td><td>   <%=camionBean.getNombreCamion()%></td></tr>
                 <tr><td>Velocidad Maxima:   </td><td>   <%=camionBean.getVelocidadMaxima()%> </td></tr>
                 <tr><td>Masa Maxima Autorizada:   </td><td>   <%=camionBean.getMma()%> </td></tr>
