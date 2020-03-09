@@ -7,7 +7,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Empresa</title>
+        <title>Camiones</title>
     </head>
     <body>
         <form name="frm_muestra_camion" method="post" action="controlador">
